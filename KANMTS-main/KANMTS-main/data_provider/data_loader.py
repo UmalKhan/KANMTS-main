@@ -227,14 +227,23 @@ class Dataset_Custom(Dataset):
         self.scaler = StandardScaler()
         df_raw = pd.read_csv(os.path.join(self.root_path,
                                           self.data_path))
+        df_raw = df_raw.fillna(method='ffill').fillna(method='bfill')
+
 
         '''
         df_raw.columns: ['date', ...(other features), target feature]
         '''
         cols = list(df_raw.columns)
-        cols.remove(self.target)
-        cols.remove('date')
-        df_raw = df_raw[['date'] + cols + [self.target]]
+        if self.target in cols:
+            cols.remove(self.target)
+        
+        # Handle case-insensitive date column
+        date_col = 'date' if 'date' in cols else 'Date'
+        if date_col in cols:
+            cols.remove(date_col)
+            
+        df_raw = df_raw[[date_col] + cols + [self.target]]
+
        
         num_train = int(len(df_raw) * 0.7)
         num_test = int(len(df_raw) * 0.2)
@@ -257,16 +266,17 @@ class Dataset_Custom(Dataset):
         else:
             data = df_data.values
 
-        df_stamp = df_raw[['date']][border1:border2]
-        df_stamp['date'] = pd.to_datetime(df_stamp.date)
+        df_stamp = df_raw[[date_col]][border1:border2]
+        df_stamp[date_col] = pd.to_datetime(df_stamp[date_col])
         if self.timeenc == 0:
-            df_stamp['month'] = df_stamp.date.apply(lambda row: row.month, 1)
-            df_stamp['day'] = df_stamp.date.apply(lambda row: row.day, 1)
-            df_stamp['weekday'] = df_stamp.date.apply(lambda row: row.weekday(), 1)
-            df_stamp['hour'] = df_stamp.date.apply(lambda row: row.hour, 1)
-            data_stamp = df_stamp.drop(['date'], 1).values
+            df_stamp['month'] = df_stamp[date_col].apply(lambda row: row.month, 1)
+            df_stamp['day'] = df_stamp[date_col].apply(lambda row: row.day, 1)
+            df_stamp['weekday'] = df_stamp[date_col].apply(lambda row: row.weekday(), 1)
+            df_stamp['hour'] = df_stamp[date_col].apply(lambda row: row.hour, 1)
+            data_stamp = df_stamp.drop([date_col], 1).values
         elif self.timeenc == 1:
-            data_stamp = time_features(pd.to_datetime(df_stamp['date'].values), freq=self.freq)
+            data_stamp = time_features(pd.to_datetime(df_stamp[date_col].values), freq=self.freq)
+
             data_stamp = data_stamp.transpose(1, 0)
 
         self.data_x = data[border1:border2]

@@ -1,0 +1,219 @@
+setting: long_term_forecast_ETTh1_96_96_KANMTS_ETTh1_ftM_sl96_ll48_pl96_dm512_dc256_el1_dl2_df512_fc1_dtTrue_Exp_nl2_hd20_bs16_lr0.0001_te20_gs5
+Epoch: 1, Steps: 529, Train Loss: 0.3180678, Vali Loss: 0.6914634, Test Loss: 0.3844504, Time Cost: 46.1803s
+Epoch: 2, Steps: 529, Train Loss: 0.3324827, Vali Loss: 0.6872987, Test Loss: 0.3803692, Time Cost: 47.0659s
+Epoch: 3, Steps: 529, Train Loss: 0.3511403, Vali Loss: 0.6936860, Test Loss: 0.3848890, Time Cost: 46.1974s
+Epoch: 4, Steps: 529, Train Loss: 0.3536006, Vali Loss: 0.6778844, Test Loss: 0.3831465, Time Cost: 45.3632s
+Epoch: 5, Steps: 529, Train Loss: 0.3207251, Vali Loss: 0.6949120, Test Loss: 0.3885375, Time Cost: 45.3945s
+Epoch: 6, Steps: 529, Train Loss: 0.3222752, Vali Loss: 0.7012797, Test Loss: 0.3854774, Time Cost: 46.0157s
+Epoch: 7, Steps: 529, Train Loss: 0.3174977, Vali Loss: 0.7148447, Test Loss: 0.3869891, Time Cost: 45.8053s
+Total Training Time: 322.18 seconds
+Total Training Memory Usage: 404328.00 MB
+Total Inference Time: 1.86S
+Total Memory Usage: 56.82 MB
+MSE: 0.38314648995065603
+MAE: 0.40431318981857234
+Total test time: 11.55 seconds
+test Memory used: 4.74 MB
+Test the total number of parameters.: 8608656
+setting: long_term_forecast_ETTh1_96_96_KANMTS_ETTh1_ftM_sl96_ll48_pl96_dm512_dc128_el2_dl2_df512_fc1_dtTrue_test_nl2_hd32_bs32_lr0.0005_te30_gs8_nh4
+setting: long_term_forecast_ETTh1_96_96_KANMTS_ETTh1_ftM_sl96_ll48_pl96_dm512_dc128_el2_dl2_df512_fc1_dtTrue_test_nl2_hd32_bs32_lr0.0005_te30_gs8_nh4
+setting: long_term_forecast_ETTh1_96_96_KANMTS_ETTh1_ftM_sl96_ll48_pl96_dm512_dc128_el2_dl2_df512_fc1_dtTrue_test_nl2_hd32_bs32_lr0.0005_te30_gs8_nh4
+Epoch: 1, Steps: 265, Train Loss: 0.3871913, Vali Loss: 0.7052900, Test Loss: 0.3943791, Time Cost: 47.6139s
+Epoch: 2, Steps: 265, Train Loss: 0.3488197, Vali Loss: 0.7319054, Test Loss: 0.4252384, Time Cost: 47.3404s
+Epoch: 3, Steps: 265, Train Loss: 0.3196418, Vali Loss: 0.7233895, Test Loss: 0.4338803, Time Cost: 47.7640s
+Epoch: 4, Steps: 265, Train Loss: 0.2909708, Vali Loss: 0.7775970, Test Loss: 0.4881949, Time Cost: 47.8550s
+Epoch: 5, Steps: 265, Train Loss: 0.2669541, Vali Loss: 0.7796425, Test Loss: 0.4750112, Time Cost: 47.8090s
+Epoch: 6, Steps: 265, Train Loss: 0.2502783, Vali Loss: 0.7907599, Test Loss: 0.4870544, Time Cost: 47.6614s
+Epoch: 7, Steps: 265, Train Loss: 0.2421147, Vali Loss: 0.7920314, Test Loss: 0.4897783, Time Cost: 47.6086s
+Epoch: 8, Steps: 265, Train Loss: 0.2561929, Vali Loss: 0.7798330, Test Loss: 0.4824762, Time Cost: 47.5972s
+Total Training Time: 381.35 seconds
+Total Training Memory Usage: 95452.00 KB
+Total Inference Time: 1.87s
+Total Inference Memory: 58.08 MB
+MSE: 0.39437912090462457
+MAE: 0.40715186209610166
+Total test time: 11.21 seconds
+Test memory used: 3.40 MB
+Total trainable parameters: 18,521,338
+setting: long_term_forecast_ETTm2_96_96_KANMTS_ETTm2_ftM_sl96_ll48_pl96_dm512_dc128_el2_dl2_df512_fc1_dtTrue_test_nl2_hd32_bs32_lr0.0005_te30_gs8_nh4
+Epoch: 1, Steps: 1075, Train Loss: 0.2298539, Vali Loss: 0.1240453, Test Loss: 0.1764284, Time Cost: 113.1725s
+Epoch: 2, Steps: 1075, Train Loss: 0.1897979, Vali Loss: 0.1351590, Test Loss: 0.1885481, Time Cost: 109.0698s
+Epoch: 3, Steps: 1075, Train Loss: 0.1573693, Vali Loss: 0.1337252, Test Loss: 0.1910098, Time Cost: 107.7460s
+Epoch: 4, Steps: 1075, Train Loss: 0.1323451, Vali Loss: 0.1308178, Test Loss: 0.1943700, Time Cost: 109.1999s
+Epoch: 5, Steps: 1075, Train Loss: 0.1158616, Vali Loss: 0.1400083, Test Loss: 0.2041580, Time Cost: 105.9840s
+Epoch: 6, Steps: 1075, Train Loss: 0.1056555, Vali Loss: 0.1422579, Test Loss: 0.2075913, Time Cost: 105.5677s
+Epoch: 7, Steps: 1075, Train Loss: 0.1005873, Vali Loss: 0.1431438, Test Loss: 0.2077388, Time Cost: 106.9512s
+Epoch: 8, Steps: 1075, Train Loss: 0.1174822, Vali Loss: 0.1428118, Test Loss: 0.2034772, Time Cost: 106.0601s
+Total Training Time: 863.85 seconds
+Total Training Memory Usage: 113088.00 KB
+Total Inference Time: 7.07s
+Total Inference Memory: 283.50 MB
+MSE: 0.1764283918147536
+MAE: 0.25662094315632167
+Total test time: 16.42 seconds
+Test memory used: 63.30 MB
+Total trainable parameters: 18,521,338
+setting: long_term_forecast_ETTm2_96_96_KANMTS_ETTm2_ftM_sl192_ll48_pl96_dm512_dc128_el2_dl2_df512_fc1_dtTrue_test_nl2_hd32_bs32_lr0.0005_te30_gs8_nh4
+Epoch: 1, Steps: 1072, Train Loss: 0.2306798, Vali Loss: 0.1265414, Test Loss: 0.1796610, Time Cost: 117.8294s
+Epoch: 2, Steps: 1072, Train Loss: 0.1893297, Vali Loss: 0.1292886, Test Loss: 0.1859679, Time Cost: 116.7773s
+Epoch: 3, Steps: 1072, Train Loss: 0.1536325, Vali Loss: 0.1402146, Test Loss: 0.2072295, Time Cost: 117.1703s
+Epoch: 4, Steps: 1072, Train Loss: 0.1272222, Vali Loss: 0.1374331, Test Loss: 0.2113134, Time Cost: 116.7118s
+Epoch: 5, Steps: 1072, Train Loss: 0.1107815, Vali Loss: 0.1489647, Test Loss: 0.2171724, Time Cost: 116.9108s
+Epoch: 6, Steps: 1072, Train Loss: 0.1003574, Vali Loss: 0.1462772, Test Loss: 0.2121395, Time Cost: 116.2926s
+Epoch: 7, Steps: 1072, Train Loss: 0.0954063, Vali Loss: 0.1468402, Test Loss: 0.2165224, Time Cost: 116.2609s
+Epoch: 8, Steps: 1072, Train Loss: 0.1118388, Vali Loss: 0.1520705, Test Loss: 0.2225240, Time Cost: 118.2226s
+Total Training Time: 936.25 seconds
+Total Training Memory Usage: 148288.00 KB
+Total Inference Time: 8.20s
+Total Inference Memory: 365.75 MB
+MSE: 0.1796610209619712
+MAE: 0.26209180411285593
+Total test time: 17.89 seconds
+Test memory used: 53.75 MB
+Total trainable parameters: 18,579,706
+setting: long_term_forecast_ETTm2_96_96_KANMTS_ETTm2_ftM_sl192_ll48_pl192_dm512_dc128_el2_dl2_df512_fc1_dtTrue_test_nl2_hd32_bs32_lr0.0005_te30_gs8_nh4
+Epoch: 1, Steps: 1069, Train Loss: 0.2941707, Vali Loss: 0.1715813, Test Loss: 0.2349824, Time Cost: 116.5526s
+Epoch: 2, Steps: 1069, Train Loss: 0.2333240, Vali Loss: 0.1744849, Test Loss: 0.2424115, Time Cost: 115.4032s
+Epoch: 3, Steps: 1069, Train Loss: 0.1836644, Vali Loss: 0.2123523, Test Loss: 0.3181292, Time Cost: 116.2205s
+Epoch: 4, Steps: 1069, Train Loss: 0.1505754, Vali Loss: 0.2037683, Test Loss: 0.3261311, Time Cost: 116.1043s
+Epoch: 5, Steps: 1069, Train Loss: 0.1302719, Vali Loss: 0.1998661, Test Loss: 0.3141554, Time Cost: 115.1531s
+Epoch: 6, Steps: 1069, Train Loss: 0.1183783, Vali Loss: 0.2007056, Test Loss: 0.3156707, Time Cost: 115.4267s
+Epoch: 7, Steps: 1069, Train Loss: 0.1129080, Vali Loss: 0.2010685, Test Loss: 0.3216118, Time Cost: 115.7588s
+Epoch: 8, Steps: 1069, Train Loss: 0.1300918, Vali Loss: 0.2002056, Test Loss: 0.3131761, Time Cost: 115.6560s
+Total Training Time: 926.36 seconds
+Total Training Memory Usage: -8372.00 KB
+Total Inference Time: 7.95s
+Total Inference Memory: 517.44 MB
+MSE: 0.23498237388525334
+MAE: 0.2999877536988172
+Total test time: 17.55 seconds
+Test memory used: 115.71 MB
+Total trainable parameters: 18,647,482
+setting: long_term_forecast_ETTm2_96_96_KANMTS_ETTm2_ftM_sl192_ll48_pl720_dm512_dc128_el2_dl2_df512_fc1_dtTrue_test_nl2_hd32_bs32_lr0.0005_te30_gs8_nh4
+Epoch: 1, Steps: 1052, Train Loss: 0.4643109, Vali Loss: 0.3042932, Test Loss: 0.4006170, Time Cost: 121.4360s
+Epoch: 2, Steps: 1052, Train Loss: 0.3365624, Vali Loss: 0.3496356, Test Loss: 0.5289324, Time Cost: 120.1318s
+Epoch: 3, Steps: 1052, Train Loss: 0.2573278, Vali Loss: 0.3466202, Test Loss: 0.4905397, Time Cost: 120.3809s
+Epoch: 4, Steps: 1052, Train Loss: 0.2166565, Vali Loss: 0.3558488, Test Loss: 0.5124598, Time Cost: 127.4498s
+Epoch: 5, Steps: 1052, Train Loss: 0.1950128, Vali Loss: 0.3724149, Test Loss: 0.5575006, Time Cost: 121.3452s
+Epoch: 6, Steps: 1052, Train Loss: 0.1825014, Vali Loss: 0.3714445, Test Loss: 0.5374861, Time Cost: 119.3821s
+Epoch: 7, Steps: 1052, Train Loss: 0.1767332, Vali Loss: 0.3718808, Test Loss: 0.5386907, Time Cost: 118.5157s
+Epoch: 8, Steps: 1052, Train Loss: 0.1923372, Vali Loss: 0.3713449, Test Loss: 0.5838231, Time Cost: 119.2557s
+Total Training Time: 968.02 seconds
+Total Training Memory Usage: -91028.00 KB
+Total Inference Time: 8.13s
+Total Inference Memory: 1279.47 MB
+MSE: 0.40061704048061025
+MAE: 0.39873449256183724
+Total test time: 18.03 seconds
+Test memory used: 422.98 MB
+Total trainable parameters: 19,020,250
+setting: long_term_forecast_ETTm1_192_720_KANMTS_ETTm1_ftM_sl192_ll48_pl720_dm512_dc128_el2_dl2_df512_fc1_dtTrue_test_nl2_hd32_bs32_lr0.0005_te30_gs8_nh4
+setting: long_term_forecast_ETTm1_192_720_KANMTS_ETTm1_ftM_sl192_ll48_pl720_dm512_dc128_el2_dl2_df512_fc1_dtTrue_test_nl2_hd32_bs32_lr0.0005_te30_gs8_nh4
+setting: long_term_forecast_ETTh1_96_720_KANMTS_ETTh1_ftM_sl96_ll48_pl720_dm512_dc128_el2_dl2_df512_fc1_dtTrue_Exp_nl2_hd32_bs16_lr0.0001_te20_gs5_nh4
+Epoch: 1, Steps: 490, Train Loss: 0.6016189, Vali Loss: 1.5617731, Test Loss: 0.4945375, Time Cost: 69.6220s
+Epoch: 2, Steps: 490, Train Loss: 0.5218659, Vali Loss: 1.6471694, Test Loss: 0.5064326, Time Cost: 68.5654s
+Epoch: 3, Steps: 490, Train Loss: 0.4817962, Vali Loss: 1.6669857, Test Loss: 0.4915897, Time Cost: 69.3691s
+Epoch: 4, Steps: 490, Train Loss: 0.4556329, Vali Loss: 1.7811660, Test Loss: 0.5208909, Time Cost: 70.3661s
+Total Training Time: 278.01 seconds
+Total Training Memory Usage: 145696.00 KB
+Total Inference Time: 3.44s
+Total Inference Memory: 223.04 MB
+MSE: 0.49453747846196505
+MAE: 0.4791888398243729
+Total test time: 13.70 seconds
+Test memory used: 67.76 MB
+Total trainable parameters: 14,969,818
+setting: long_term_forecast_ETTh1_96_96_KANMTS_ETTh1_ftM_sl96_ll48_pl96_dm256_dc64_el2_dl2_df256_fc1_dtTrue_Exp_v2_nl2_hd32_bs16_lr0.0003_te30_gs5_nh4
+Epoch: 1, Steps: 529, Train Loss: 0.1649112, Vali Loss: 0.7062348, Test Loss: 0.3883385, Time Cost: 60.9742s
+setting: long_term_forecast_ETTh1_96_96_KANMTS_ETTh1_ftM_sl96_ll48_pl96_dm256_dc64_el2_dl2_df256_fc1_dtTrue_Exp_v2_nl2_hd32_bs16_lr0.0003_te30_gs5_nh4
+Epoch: 1, Steps: 529, Train Loss: 0.1649112, Vali Loss: 0.7062348, Test Loss: 0.3883385, Time Cost: 58.7589s
+Epoch: 2, Steps: 529, Train Loss: 0.1509333, Vali Loss: 0.6984153, Test Loss: 0.3829987, Time Cost: 59.1738s
+Epoch: 3, Steps: 529, Train Loss: 0.1449743, Vali Loss: 0.6988437, Test Loss: 0.3882418, Time Cost: 60.8197s
+Epoch: 4, Steps: 529, Train Loss: 0.1395691, Vali Loss: 0.7067673, Test Loss: 0.3979143, Time Cost: 58.1326s
+Epoch: 5, Steps: 529, Train Loss: 0.1350211, Vali Loss: 0.7117038, Test Loss: 0.3993001, Time Cost: 58.5337s
+Epoch: 6, Steps: 529, Train Loss: 0.1313412, Vali Loss: 0.7186841, Test Loss: 0.3992035, Time Cost: 56.4189s
+Epoch: 7, Steps: 529, Train Loss: 0.1295257, Vali Loss: 0.7176964, Test Loss: 0.4011168, Time Cost: 54.8185s
+Epoch: 8, Steps: 529, Train Loss: 0.1319999, Vali Loss: 0.7229834, Test Loss: 0.4048561, Time Cost: 54.4877s
+Epoch: 9, Steps: 529, Train Loss: 0.1269851, Vali Loss: 0.7319194, Test Loss: 0.4089720, Time Cost: 54.2403s
+Total Training Time: 515.44 seconds
+Total Training Memory Usage: 224216.00 KB
+Total Inference Time: 2.53s
+Total Inference Memory: 65.68 MB
+MSE: 0.38299873539746554
+MAE: 0.3983724052109881
+Total test time: 12.14 seconds
+Test memory used: 13.86 MB
+Total trainable parameters: 957,053
+setting: long_term_forecast_ETTh1_96_96_KANMTS_ETTh1_ftM_sl96_ll48_pl96_dm128_dc32_el2_dl2_df128_fc1_dtTrue_Exp_v3_Slim_nl2_hd32_bs16_lr0.0003_te30_gs5_nh4
+Epoch: 1, Steps: 529, Train Loss: 0.1709764, Vali Loss: 0.7124687, Test Loss: 0.3878566, Time Cost: 56.3019s
+Epoch: 2, Steps: 529, Train Loss: 0.1538762, Vali Loss: 0.7071966, Test Loss: 0.3851544, Time Cost: 57.1372s
+Epoch: 3, Steps: 529, Train Loss: 0.1485575, Vali Loss: 0.7170522, Test Loss: 0.3865707, Time Cost: 57.3219s
+setting: long_term_forecast_ETTh1_96_96_KANMTS_ETTh1_ftM_sl96_ll48_pl96_dm128_dc32_el2_dl2_df128_fc1_dtTrue_Exp_v4_STARKAN_nl2_hd32_bs16_lr0.0003_te30_gs5_nh4
+Epoch: 4, Steps: 529, Train Loss: 0.1451278, Vali Loss: 0.7176867, Test Loss: 0.3893442, Time Cost: 65.1877s
+Epoch: 5, Steps: 529, Train Loss: 0.1427098, Vali Loss: 0.7192076, Test Loss: 0.3896224, Time Cost: 65.0141s
+Epoch: 1, Steps: 529, Train Loss: 0.1656605, Vali Loss: 0.7033732, Test Loss: 0.3868166, Time Cost: 80.1113s
+Epoch: 6, Steps: 529, Train Loss: 0.1410967, Vali Loss: 0.7215191, Test Loss: 0.3889006, Time Cost: 58.9169s
+Epoch: 2, Steps: 529, Train Loss: 0.1517099, Vali Loss: 0.6889767, Test Loss: 0.3775253, Time Cost: 76.1808s
+Epoch: 7, Steps: 529, Train Loss: 0.1404054, Vali Loss: 0.7227021, Test Loss: 0.3904134, Time Cost: 64.2875s
+Epoch: 3, Steps: 529, Train Loss: 0.1462450, Vali Loss: 0.6847406, Test Loss: 0.3848102, Time Cost: 84.1408s
+Epoch: 8, Steps: 529, Train Loss: 0.1408813, Vali Loss: 0.7213070, Test Loss: 0.3926621, Time Cost: 65.8759s
+setting: long_term_forecast_ETTm1_192_720_KANMTS_ETTm1_ftM_sl192_ll48_pl720_dm128_dc32_el2_dl2_df128_fc1_dtTrue_Exp_v4_STARKAN_720_nl2_hd32_bs16_lr0.0003_te30_gs5_nh4
+Epoch: 9, Steps: 529, Train Loss: 0.1383953, Vali Loss: 0.7196475, Test Loss: 0.3995300, Time Cost: 76.9633s
+Total Training Time: 567.06 seconds
+Total Training Memory Usage: 221488.00 KB
+Epoch: 4, Steps: 529, Train Loss: 0.1417739, Vali Loss: 0.6862269, Test Loss: 0.3891236, Time Cost: 95.2785s
+Total Inference Time: 3.44s
+Total Inference Memory: 70.05 MB
+MSE: 0.38515438320820805
+MAE: 0.40133766031136847
+Total test time: 17.30 seconds
+Test memory used: -614.38 MB
+Total trainable parameters: 298,605
+setting: long_term_forecast_ETTh1_96_96_KANMTS_ETTh1_ftM_sl96_ll48_pl96_dm128_dc32_el2_dl2_df128_fc1_dtTrue_Exp_v4_STARKAN_nl2_hd32_bs16_lr0.0003_te30_gs5_nh4
+Epoch: 1, Steps: 529, Train Loss: 0.1656605, Vali Loss: 0.7033732, Test Loss: 0.3868166, Time Cost: 70.6380s
+Epoch: 2, Steps: 529, Train Loss: 0.1517099, Vali Loss: 0.6889767, Test Loss: 0.3775253, Time Cost: 71.1201s
+Epoch: 3, Steps: 529, Train Loss: 0.1462450, Vali Loss: 0.6847406, Test Loss: 0.3848102, Time Cost: 70.3712s
+Epoch: 4, Steps: 529, Train Loss: 0.1417739, Vali Loss: 0.6862269, Test Loss: 0.3891236, Time Cost: 75.9030s
+Epoch: 5, Steps: 529, Train Loss: 0.1388939, Vali Loss: 0.6907804, Test Loss: 0.3902950, Time Cost: 72.4405s
+Epoch: 6, Steps: 529, Train Loss: 0.1363561, Vali Loss: 0.6979330, Test Loss: 0.3902020, Time Cost: 72.8657s
+Epoch: 7, Steps: 529, Train Loss: 0.1353982, Vali Loss: 0.6962192, Test Loss: 0.3915870, Time Cost: 71.4611s
+Epoch: 8, Steps: 529, Train Loss: 0.1360256, Vali Loss: 0.7058753, Test Loss: 0.4009225, Time Cost: 72.2922s
+Epoch: 9, Steps: 529, Train Loss: 0.1322019, Vali Loss: 0.7202252, Test Loss: 0.3962297, Time Cost: 72.7062s
+Epoch: 10, Steps: 529, Train Loss: 0.1284278, Vali Loss: 0.7385610, Test Loss: 0.4031269, Time Cost: 72.2531s
+Total Training Time: 722.11 seconds
+Total Training Memory Usage: 140392.00 KB
+Total Inference Time: 4.14s
+Total Inference Memory: 68.60 MB
+MSE: 0.38481015815555086
+MAE: 0.3994255055966026
+Total test time: 14.10 seconds
+Test memory used: 16.75 MB
+Total trainable parameters: 649,560
+setting: long_term_forecast_ETTh1_96_96_KANMTS_ETTh1_ftM_sl96_ll48_pl96_dm128_dc32_el2_dl2_df128_fc1_dtTrue_Exp_v4_STARKAN_nl2_hd32_bs16_lr0.0003_te30_gs5_nh4
+setting: long_term_forecast_ETTm1_192_720_KANMTS_ETTm1_ftM_sl192_ll48_pl720_dm128_dc32_el2_dl2_df128_fc1_dtTrue_Exp_v4_STARKAN_720_nl2_hd32_bs16_lr0.0003_te30_gs5_nh4
+Epoch: 1, Steps: 2104, Train Loss: 0.1784356, Vali Loss: 0.9612638, Test Loss: 0.4538180, Time Cost: 228.2652s
+Epoch: 2, Steps: 2104, Train Loss: 0.1602864, Vali Loss: 1.0623393, Test Loss: 0.4595977, Time Cost: 229.5477s
+setting: long_term_forecast_Finance_96_96_KANMTS_custom_ftM_sl96_ll48_pl96_dm128_dc32_el2_dl2_df128_fc1_dtTrue_Finance_v4_nl2_hd32_bs16_lr0.0001_te30_gs3_nh4
+setting: long_term_forecast_Finance_96_96_KANMTS_custom_ftM_sl96_ll48_pl96_dm128_dc32_el2_dl2_df128_fc1_dtTrue_Finance_v4_nl2_hd32_bs16_lr0.0001_te30_gs3_nh4
+setting: long_term_forecast_Finance_96_96_KANMTS_custom_ftM_sl96_ll48_pl96_dm128_dc32_el2_dl2_df128_fc1_dtTrue_Finance_v4_nl2_hd32_bs16_lr0.0001_te30_gs3_nh4
+setting: long_term_forecast_Finance_96_96_KANMTS_custom_ftM_sl96_ll48_pl96_dm128_dc32_el2_dl2_df128_fc1_dtTrue_Finance_v4_nl2_hd32_bs16_lr0.0001_te30_gs3_nh4
+setting: long_term_forecast_Finance_96_96_KANMTS_custom_ftM_sl96_ll48_pl96_dm128_dc32_el2_dl2_df128_fc1_dtTrue_Finance_v4_nl2_hd32_bs16_lr0.0001_te30_gs3_nh4
+Epoch: 1, Steps: 388, Train Loss: 0.1516603, Vali Loss: 0.5021300, Test Loss: 1.4630278, Time Cost: 57.6461s
+setting: long_term_forecast_Finance_96_96_KANMTS_custom_ftM_sl96_ll48_pl96_dm128_dc32_el2_dl2_df128_fc1_dtTrue_Finance_v4_nl2_hd32_bs16_lr0.0001_te30_gs3_nh4
+setting: long_term_forecast_weather_96_96_KANMTS_custom_ftM_sl96_ll48_pl96_dm512_dc256_el1_dl2_df512_fc1_dtTrue_Exp_nl2_hd32_bs16_lr0.0001_te20_gs5_nh4
+Epoch: 1, Steps: 2294, Train Loss: 0.4076063, Vali Loss: 0.3965184, Test Loss: 0.1590333, Time Cost: 138.7439s
+Epoch: 2, Steps: 2294, Train Loss: 0.3614212, Vali Loss: 0.3883829, Test Loss: 0.1537236, Time Cost: 139.6555s
+Epoch: 3, Steps: 2294, Train Loss: 0.3446085, Vali Loss: 0.3856860, Test Loss: 0.1516187, Time Cost: 138.5894s
+Epoch: 4, Steps: 2294, Train Loss: 0.3327222, Vali Loss: 0.3869005, Test Loss: 0.1513575, Time Cost: 143.1708s
+Epoch: 5, Steps: 2294, Train Loss: 0.3257486, Vali Loss: 0.3903959, Test Loss: 0.1529850, Time Cost: 145.0918s
+Epoch: 6, Steps: 2294, Train Loss: 0.3304906, Vali Loss: 0.3901112, Test Loss: 0.1540104, Time Cost: 138.9499s
+Total Training Time: 844.32 seconds
+Total Training Memory Usage: 209344.00 KB
+Total Inference Time: 9.51s
+Total Inference Memory: 629.66 MB
+MSE: 0.15161871050895745
+MAE: 0.19482493361765651
+Total test time: 19.53 seconds
+Test memory used: 171.58 MB
+Total trainable parameters: 5,433,142
+setting: long_term_forecast_financial_96_96_KANMTS_custom_ftM_sl96_ll48_pl96_dm512_dc128_el2_dl2_df512_fc1_dtTrue_financial_nl2_hd32_bs16_lr0.0001_te20_gs5_nh4
