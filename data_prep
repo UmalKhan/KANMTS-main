@@ -1,0 +1,588 @@
+"""
+=============================================================================
+  KAN-MTS Financial Dataset Builder
+  -----------------------------------
+  Builds a real, long-history multivariate time-series CSV suitable for
+  KAN temporal research experiments.
+
+  OUTPUT COLUMNS (matching your sample schema):
+    Date, Open_Price, Close_Price, High_Price, Low_Price, Volume,
+    Daily_Return_Pct, Volatility_Range, VIX_Close,
+    Economic_News_Flag, Sentiment_Score,
+    Federal_Rate_Change_Flag, GeoPolitical_Risk_Score, Currency_Index
+
+  SOURCES:
+    - Yahoo Finance  (yfinance)         → OHLCV, VIX, DXY
+    - FRED API       (fredapi)          → Fed Funds Rate
+    - Dallas Fed GPR (HTTP download)    → Geopolitical Risk Score
+    - Baker-Bloom EPU(HTTP download)    → Economic Policy Uncertainty
+                                          (used as proxy for News Flag + Sentiment)
+
+  HISTORY:  1990-01-01  →  today   (longest period with all features available)
+            VIX starts 1990; GPR starts 1985; FRED goes back to 1954.
+
+  INSTALL (run once):
+    pip install --upgrade yfinance fredapi pandas numpy requests tqdm openpyxl
+
+  FRED API KEY:
+    Free from https://fred.stlouisfed.org/docs/api/api_key.html
+    Set it below or via environment variable FRED_API_KEY.
+
+  USAGE:
+    python data_prep.py
+
+  KAN-MTS COMPATIBILITY:
+    The script also saves a PyTorch-ready .pt file with the tensors:
+      x_enc      (N, seq_len, enc_in)   ← input window
+      x_mark_enc (N, seq_len, 4)        ← time features [month,day,weekday,hour]
+      x_dec      (N, label+pred, enc_in)
+      x_mark_dec (N, label+pred, 4)
+      y          (N, pred_len, enc_in)  ← ground truth
+
+    Default: seq_len=96, pred_len=96, label_len=48 (change below).
+=============================================================================
+"""
+
+import os
+import sys
+import requests
+import io
+import warnings
+import numpy as np
+import pandas as pd
+from datetime import datetime, timedelta
+from tqdm import tqdm
+
+warnings.filterwarnings("ignore")
+
+# ─────────────────────────────────────────────────────────────────────────────
+#  CONFIGURATION  ← edit these
+# ─────────────────────────────────────────────────────────────────────────────
+START_DATE    = "1990-01-01"
+END_DATE      = datetime.today().strftime("%Y-%m-%d")
+TICKER        = "^GSPC"          # S&P 500 (change to e.g. "AAPL", "^DJI")
+FRED_API_KEY  = os.environ.get("FRED_API_KEY", "814fb508497af3d569d7f70f9ad1e55e")
+OUTPUT_CSV    = "financial_mts_dataset.csv"
+OUTPUT_PT     = "financial_mts_tensors.pt"
+
+# KAN-MTS window config (must match your configs object)
+SEQ_LEN   = 96
+LABEL_LEN = 48
+PRED_LEN  = 96
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+#  STEP 1 — OHLCV from Yahoo Finance  (FIXED: uses Ticker.history() first)
+# ─────────────────────────────────────────────────────────────────────────────
+def fetch_ohlcv(ticker, start, end):
+    print(f"\n[1/6] Downloading OHLCV for {ticker} via yfinance ...")
+    try:
+        import yfinance as yf
+    except ImportError:
+        sys.exit("Run:  pip install yfinance")
+
+    raw = None
+
+    # ── Strategy 1: yf.Ticker().history() ────────────────────────────────────
+    # More reliable than yf.download() for index tickers on newer yfinance versions
+    for t in [ticker, "SPY", "^GSPC", "QQQ"]:
+        try:
+            print(f"    → Trying Ticker('{t}').history() ...")
+            obj = yf.Ticker(t)
+            r = obj.history(start=start, end=end, auto_adjust=True)
+            if isinstance(r.columns, pd.MultiIndex):
+                r.columns = r.columns.get_level_values(0)
+            if len(r) > 10:
+                raw = r
+                print(f"    ✓ Got {len(raw)} rows using Ticker('{t}')")
+                break
+        except Exception as e:
+            print(f"    ✗ Failed: {e}")
+
+    # ── Strategy 2: yf.download() with period="max" as last resort ───────────
+    if raw is None:
+        for t in ["SPY", "QQQ", "^DJI"]:
+            try:
+                print(f"    → Trying yf.download('{t}', period='max') ...")
+                r = yf.download(t, period="max", progress=False, auto_adjust=True)
+                if isinstance(r.columns, pd.MultiIndex):
+                    r.columns = r.columns.get_level_values(0)
+                r = r[r.index >= pd.Timestamp(start)]
+                if len(r) > 10:
+                    raw = r
+                    print(f"    ✓ Got {len(raw)} rows using download('{t}')")
+                    break
+            except Exception as e:
+                print(f"    ✗ Failed: {e}")
+
+    if raw is None or len(raw) == 0:
+        sys.exit(
+            "\n✗ Could not download any price data.\n"
+            "  Try:  pip install --upgrade yfinance\n"
+            "  Also check your internet connection."
+        )
+
+    raw.index = pd.to_datetime(raw.index)
+
+    # Strip timezone info if present (newer yfinance adds UTC)
+    if raw.index.tz is not None:
+        raw.index = raw.index.tz_localize(None)
+    raw.index.name = "Date"
+
+    # Map column names — handle both adjusted and non-adjusted column sets
+    col_map = {}
+    for c in raw.columns:
+        cl = str(c).lower().strip()
+        if cl == "open":
+            col_map[c] = "Open_Price"
+        elif cl in ("close", "adj close", "adjclose"):
+            col_map[c] = "Close_Price"
+        elif cl == "high":
+            col_map[c] = "High_Price"
+        elif cl == "low":
+            col_map[c] = "Low_Price"
+        elif cl == "volume":
+            col_map[c] = "Volume"
+    raw = raw.rename(columns=col_map)
+
+    needed = ["Open_Price", "Close_Price", "High_Price", "Low_Price", "Volume"]
+    missing = [c for c in needed if c not in raw.columns]
+    if missing:
+        sys.exit(
+            f"✗ Missing columns after rename: {missing}.\n"
+            f"  Raw columns were: {list(raw.columns)}"
+        )
+
+    df = raw[needed].copy()
+
+    if len(df) == 0:
+        sys.exit("✗ DataFrame is empty after processing. Check your date range.")
+
+    df["Daily_Return_Pct"] = df["Close_Price"].pct_change() * 100
+    df["Volatility_Range"] = df["High_Price"] - df["Low_Price"]
+
+    print(f"    ✓ {len(df)} trading days  ({df.index[0].date()} → {df.index[-1].date()})")
+    return df
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+#  STEP 2 — VIX from Yahoo Finance  (FIXED: uses Ticker.history() first)
+# ─────────────────────────────────────────────────────────────────────────────
+def fetch_vix(start, end):
+    print("[2/6] Downloading VIX (^VIX) ...")
+    try:
+        import yfinance as yf
+    except ImportError:
+        sys.exit("Run:  pip install yfinance")
+
+    raw = None
+
+    # Try Ticker().history() first
+    for t in ["^VIX", "VIXY"]:
+        try:
+            print(f"    → Trying Ticker('{t}').history() ...")
+            obj = yf.Ticker(t)
+            r = obj.history(start=start, end=end, auto_adjust=True)
+            if isinstance(r.columns, pd.MultiIndex):
+                r.columns = r.columns.get_level_values(0)
+            if len(r) > 10:
+                raw = r
+                print(f"    ✓ Got {len(raw)} rows")
+                break
+        except Exception as e:
+            print(f"    ✗ Failed: {e}")
+
+    # Fallback to yf.download
+    if raw is None:
+        try:
+            raw = yf.download("^VIX", start=start, end=end, progress=False, auto_adjust=True)
+            if isinstance(raw.columns, pd.MultiIndex):
+                raw.columns = raw.columns.get_level_values(0)
+        except Exception as e:
+            print(f"    ✗ yf.download also failed: {e}")
+
+    if raw is None or len(raw) == 0:
+        print("    ⚠  VIX unavailable — filling with 20.0 placeholder.")
+        idx = pd.date_range(start, end, freq="D")
+        return pd.DataFrame({"VIX_Close": 20.0}, index=idx)
+
+    raw.index = pd.to_datetime(raw.index)
+    if raw.index.tz is not None:
+        raw.index = raw.index.tz_localize(None)
+
+    vix = raw[["Close"]].rename(columns={"Close": "VIX_Close"})
+    print(f"    ✓ {len(vix)} rows")
+    return vix
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+#  STEP 3 — DXY (Dollar Currency Index) from Yahoo Finance  (FIXED)
+# ─────────────────────────────────────────────────────────────────────────────
+def fetch_dxy(start, end):
+    print("[3/6] Downloading DXY Currency Index ...")
+    try:
+        import yfinance as yf
+    except ImportError:
+        sys.exit("Run:  pip install yfinance")
+
+    raw = None
+
+    for t in ["DX-Y.NYB", "UUP"]:
+        try:
+            print(f"    → Trying Ticker('{t}').history() ...")
+            obj = yf.Ticker(t)
+            r = obj.history(start=start, end=end, auto_adjust=True)
+            if isinstance(r.columns, pd.MultiIndex):
+                r.columns = r.columns.get_level_values(0)
+            if len(r) > 10:
+                raw = r
+                print(f"    ✓ Got {len(raw)} rows")
+                break
+        except Exception as e:
+            print(f"    ✗ Failed: {e}")
+
+    if raw is None or len(raw) == 0:
+        print("    ⚠  DXY unavailable — filling with 100.0 placeholder.")
+        idx = pd.date_range(start, end, freq="D")
+        return pd.DataFrame({"Currency_Index": 100.0}, index=idx)
+
+    raw.index = pd.to_datetime(raw.index)
+    if raw.index.tz is not None:
+        raw.index = raw.index.tz_localize(None)
+
+    dxy = raw[["Close"]].rename(columns={"Close": "Currency_Index"})
+    print(f"    ✓ {len(dxy)} rows")
+    return dxy
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+#  STEP 4 — Federal Funds Rate from FRED → change flag
+# ─────────────────────────────────────────────────────────────────────────────
+def fetch_fed_rate(start, end):
+    print("[4/6] Downloading Fed Funds Rate from FRED ...")
+
+    series = None
+
+    # Try fredapi first
+    try:
+        from fredapi import Fred
+        if FRED_API_KEY == "YOUR_FRED_API_KEY_HERE":
+            raise ValueError("no key set")
+        fred = Fred(api_key=FRED_API_KEY)
+        series = fred.get_series("FEDFUNDS", observation_start=start, observation_end=end)
+        print("    ✓ Fetched via fredapi")
+    except Exception as e:
+        print(f"    ⚠  fredapi failed ({e}), trying pandas_datareader ...")
+
+    # Fallback: pandas_datareader
+    if series is None:
+        try:
+            import pandas_datareader.data as web
+            series = web.DataReader("FEDFUNDS", "fred", start, end)["FEDFUNDS"]
+            print("    ✓ Fetched via pandas_datareader")
+        except Exception as e:
+            print(f"    ✗ pandas_datareader also failed: {e}")
+
+    # Last resort: hardcoded placeholder
+    if series is None:
+        print("    → Using zeros as placeholder. Set FRED_API_KEY to fix.")
+        idx = pd.date_range(start, end, freq="MS")
+        series = pd.Series(0.0, index=idx, name="FEDFUNDS")
+
+    series.index = pd.to_datetime(series.index)
+    series.name = "Fed_Rate"
+
+    # Resample to daily, forward-fill (rate stays same until next meeting)
+    daily = series.resample("D").ffill()
+
+    # Flag = 1 on days the rate actually changed
+    flag = (daily.diff() != 0).astype(int)
+    flag.name = "Federal_Rate_Change_Flag"
+    flag.iloc[0] = 0  # first row is NaN after diff; set to 0
+
+    print(f"    ✓ {len(flag)} daily rows  |  {flag.sum()} change-days detected")
+    return flag.to_frame()
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+#  STEP 5 — Geopolitical Risk Score (Dallas Fed GPR Index)
+#            Caldara & Iacoviello (2022) — free public data
+# ─────────────────────────────────────────────────────────────────────────────
+def fetch_gpr():
+    print("[5/6] Downloading Geopolitical Risk (GPR) Index ...")
+    url = "https://www.matteoiacoviello.com/gpr_files/data_gpr_export.xls"
+    try:
+        resp = requests.get(url, timeout=30)
+        resp.raise_for_status()
+        gpr_raw = pd.read_excel(io.BytesIO(resp.content), sheet_name=0)
+
+        gpr_raw.columns = [str(c).strip() for c in gpr_raw.columns]
+        date_col = [c for c in gpr_raw.columns if "date" in c.lower() or "year" in c.lower()][0]
+        gpr_col  = [c for c in gpr_raw.columns if c.upper().startswith("GPRH") or c == "GPR"][0]
+
+        gpr_raw[date_col] = pd.to_datetime(gpr_raw[date_col], errors="coerce")
+        gpr_raw = gpr_raw[[date_col, gpr_col]].dropna()
+        gpr_raw = gpr_raw.set_index(date_col)
+        gpr_raw.index.name = "Date"
+        gpr_raw.columns = ["GeoPolitical_Risk_Score"]
+
+        daily = gpr_raw.resample("D").ffill()
+        print(f"    ✓ {len(daily)} daily rows  (monthly GPR forward-filled)")
+        return daily
+
+    except Exception as e:
+        print(f"    ⚠  GPR download failed ({e}). Trying EPU as fallback ...")
+        return fetch_epu_as_gpr_proxy()
+
+
+def fetch_epu_as_gpr_proxy():
+    """Baker, Bloom & Davis Economic Policy Uncertainty — used as GPR proxy if GPR fails."""
+    url = "https://www.policyuncertainty.com/media/US_Historical_EPU_Data.xlsx"
+    try:
+        resp = requests.get(url, timeout=30)
+        resp.raise_for_status()
+        epu = pd.read_excel(io.BytesIO(resp.content), skiprows=0)
+        epu.columns = [str(c).strip() for c in epu.columns]
+
+        year_col  = [c for c in epu.columns if "year" in c.lower()][0]
+        month_col = [c for c in epu.columns if "month" in c.lower()][0]
+        val_col   = epu.columns[-1]
+
+        epu["Date"] = pd.to_datetime(
+            epu[year_col].astype(int).astype(str) + "-" +
+            epu[month_col].astype(int).astype(str) + "-01"
+        )
+        epu = epu.set_index("Date")[[val_col]].dropna()
+        epu.columns = ["GeoPolitical_Risk_Score"]
+        daily = epu.resample("D").ffill()
+        print(f"    ✓ EPU proxy: {len(daily)} daily rows")
+        return daily
+    except Exception as e:
+        print(f"    ✗ EPU also failed ({e}). Filling GeoPolitical_Risk_Score with 50.0 placeholder.")
+        idx = pd.date_range("1985-01-01", datetime.today(), freq="D")
+        return pd.DataFrame({"GeoPolitical_Risk_Score": 50.0}, index=idx)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+#  STEP 6 — Economic News Flag + Sentiment Score
+# ─────────────────────────────────────────────────────────────────────────────
+def build_news_sentiment(df):
+    """
+    Since raw news sentiment pre-2000 is unavailable for free, we use a robust
+    proxy approach commonly used in academic finance papers:
+
+      Sentiment_Score    = normalised inverse of VIX (fear → negative sentiment)
+                           [-1, +1] scale
+      Economic_News_Flag = 1 on days where |Daily_Return_Pct| > 1.5σ
+                           (large moves historically correlate with news events)
+    """
+    print("[6/6] Computing News Flag and Sentiment Score (proxy) ...")
+
+    # Sentiment proxy: inverse-normalised VIX → [-1, 1]
+    vix = df["VIX_Close"].copy()
+    vix_norm = (vix - vix.rolling(252, min_periods=21).mean()) / \
+               (vix.rolling(252, min_periods=21).std() + 1e-8)
+    df["Sentiment_Score"] = (-vix_norm).clip(-3, 3) / 3
+    df["Sentiment_Score"] = df["Sentiment_Score"].round(3)
+
+    # Economic news flag: 1 if absolute daily return > 1.5 rolling std-dev
+    ret = df["Daily_Return_Pct"].copy()
+    rolling_std = ret.rolling(21, min_periods=5).std()
+    df["Economic_News_Flag"] = (ret.abs() > 1.5 * rolling_std).astype(int)
+
+    news_days = df["Economic_News_Flag"].sum()
+    print(f"    ✓ Sentiment proxy built  |  {news_days} economic-news flag days "
+          f"({100*news_days/len(df):.1f}% of trading days)")
+    return df
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+#  MERGE & CLEAN
+# ─────────────────────────────────────────────────────────────────────────────
+def merge_all(ohlcv, vix, dxy, fed, gpr):
+    print("\n[Merging] Joining all sources on trading-day index ...")
+
+    df = ohlcv.copy()
+    df = df.join(vix,  how="left")
+    df = df.join(dxy,  how="left")
+    df = df.join(fed,  how="left")
+    df = df.join(gpr,  how="left")
+
+    # Forward-fill macro series
+    for col in ["Federal_Rate_Change_Flag", "GeoPolitical_Risk_Score", "Currency_Index"]:
+        if col in df.columns:
+            df[col] = df[col].ffill()
+
+    # Drop rows with no price data
+    df = df.dropna(subset=["Open_Price", "Close_Price"])
+
+    # Fill remaining NaNs
+    df["VIX_Close"]                = df["VIX_Close"].ffill().bfill()
+    df["Currency_Index"]           = df["Currency_Index"].ffill().bfill()
+    df["Federal_Rate_Change_Flag"] = df["Federal_Rate_Change_Flag"].fillna(0).astype(int)
+    df["GeoPolitical_Risk_Score"]  = df["GeoPolitical_Risk_Score"].ffill().bfill()
+
+    df = df.dropna()
+
+    df.index.name = "Date"
+
+    print(f"    ✓ Final dataset: {len(df)} rows × {len(df.columns)} columns")
+    print(f"    ✓ Date range: {df.index[0].date()} → {df.index[-1].date()}")
+
+    return df
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+#  PYTORCH TENSOR EXPORT
+# ─────────────────────────────────────────────────────────────────────────────
+def export_pytorch_tensors(df, seq_len, label_len, pred_len, output_path):
+    """
+    Creates sliding-window samples compatible with Model.forward() signature:
+        x_enc      (N, seq_len, enc_in)
+        x_mark_enc (N, seq_len, 4)         time features
+        x_dec      (N, label_len+pred_len, enc_in)
+        x_mark_dec (N, label_len+pred_len, 4)
+        y          (N, pred_len, enc_in)   ground truth
+    """
+    try:
+        import torch
+    except ImportError:
+        print("    ⚠  PyTorch not installed — skipping .pt export.")
+        return
+
+    print(f"\n[PyTorch] Building sliding windows  "
+          f"seq={seq_len}, label={label_len}, pred={pred_len} ...")
+
+    values = df.values.astype(np.float32)
+    dates  = df.index
+
+    # Z-score normalise per feature
+    mean = values.mean(axis=0, keepdims=True)
+    std  = values.std(axis=0, keepdims=True) + 1e-8
+    values_norm = (values - mean) / std
+
+    def time_features(idx_slice):
+        months   = np.array([d.month     for d in idx_slice], dtype=np.float32) / 12.0
+        days     = np.array([d.day       for d in idx_slice], dtype=np.float32) / 31.0
+        weekdays = np.array([d.weekday() for d in idx_slice], dtype=np.float32) / 6.0
+        doy      = np.array([d.dayofyear for d in idx_slice], dtype=np.float32) / 366.0
+        return np.stack([months, days, weekdays, doy], axis=-1)
+
+    total     = len(values_norm)
+    step      = seq_len + pred_len
+    n_samples = total - step
+
+    X_enc, X_mark_enc = [], []
+    X_dec, X_mark_dec = [], []
+    Y                 = []
+
+    for i in tqdm(range(n_samples), desc="    Windowing", ncols=70):
+        s_begin = i
+        s_end   = s_begin + seq_len
+        r_begin = s_end - label_len
+        r_end   = r_begin + label_len + pred_len
+
+        if r_end > total:
+            break
+
+        X_enc.append(values_norm[s_begin:s_end])
+        X_mark_enc.append(time_features(dates[s_begin:s_end]))
+
+        dec_inp = np.concatenate([
+            values_norm[r_begin:r_begin + label_len],
+            np.zeros((pred_len, values_norm.shape[1]), dtype=np.float32)
+        ], axis=0)
+        X_dec.append(dec_inp)
+        X_mark_dec.append(time_features(dates[r_begin:r_begin + label_len + pred_len]))
+
+        Y.append(values_norm[s_end:s_end + pred_len])
+
+    tensors = {
+        "x_enc":        torch.tensor(np.array(X_enc)),
+        "x_mark_enc":   torch.tensor(np.array(X_mark_enc)),
+        "x_dec":        torch.tensor(np.array(X_dec)),
+        "x_mark_dec":   torch.tensor(np.array(X_mark_dec)),
+        "y":            torch.tensor(np.array(Y)),
+        "feature_names": list(df.columns),
+        "norm_mean":    torch.tensor(mean),
+        "norm_std":     torch.tensor(std),
+    }
+
+    torch.save(tensors, output_path)
+    print(f"    ✓ Saved {tensors['x_enc'].shape[0]:,} samples  →  {output_path}")
+    print(f"    ✓ x_enc shape  : {tensors['x_enc'].shape}   (N, seq_len, enc_in={values.shape[1]})")
+    print(f"    ✓ x_mark shape : {tensors['x_mark_enc'].shape}")
+    print(f"    ✓ y shape      : {tensors['y'].shape}")
+    print(f"\n    In your configs set:  enc_in={values.shape[1]}")
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+#  DATASET SUMMARY
+# ─────────────────────────────────────────────────────────────────────────────
+def print_summary(df):
+    print("\n" + "="*60)
+    print("  DATASET SUMMARY")
+    print("="*60)
+    print(f"  Rows       : {len(df):,}")
+    print(f"  Columns    : {len(df.columns)}")
+    print(f"  Date range : {df.index[0].date()} → {df.index[-1].date()}")
+    print(f"  Years      : {(df.index[-1]-df.index[0]).days/365.25:.1f}")
+    print()
+    desc = df.describe().T[["mean","std","min","max"]]
+    desc.columns = ["Mean","Std","Min","Max"]
+    print(desc.to_string())
+    print("="*60)
+
+    na = df.isna().sum()
+    if na.sum() > 0:
+        print("\n  ⚠  Missing values:")
+        print(na[na > 0])
+    else:
+        print("\n  ✓ No missing values")
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+#  MAIN
+# ─────────────────────────────────────────────────────────────────────────────
+if __name__ == "__main__":
+    print("="*60)
+    print("  KAN-MTS Financial Dataset Builder")
+    print(f"  Ticker: {TICKER}  |  {START_DATE} → {END_DATE}")
+    print("="*60)
+
+    # Fetch
+    ohlcv = fetch_ohlcv(TICKER, START_DATE, END_DATE)
+    vix   = fetch_vix(START_DATE, END_DATE)
+    dxy   = fetch_dxy(START_DATE, END_DATE)
+    fed   = fetch_fed_rate(START_DATE, END_DATE)
+    gpr   = fetch_gpr()
+
+    # Merge
+    df = merge_all(ohlcv, vix, dxy, fed, gpr)
+
+    # ✅ NOW build features (this creates missing columns)
+    df = build_news_sentiment(df)
+
+    # ✅ NOW reorder columns (FIXED POSITION)
+    col_order = [
+        "Open_Price", "Close_Price", "High_Price", "Low_Price", "Volume",
+        "Daily_Return_Pct", "Volatility_Range", "VIX_Close",
+        "Economic_News_Flag", "Sentiment_Score",
+        "Federal_Rate_Change_Flag", "GeoPolitical_Risk_Score", "Currency_Index"
+    ]
+
+    df = df[col_order]
+
+    # Save CSV
+    df.to_csv(OUTPUT_CSV)
+    print(f"\n[Output] CSV saved → {OUTPUT_CSV}")
+
+    # Summary
+    print_summary(df)
+
+    # Export tensors
+    export_pytorch_tensors(df, SEQ_LEN, LABEL_LEN, PRED_LEN, OUTPUT_PT)
+
+    print(f"\n[Done] Files created:")
+    print(f"  {OUTPUT_CSV}")
+    print(f"  {OUTPUT_PT}")
