@@ -221,11 +221,15 @@ class Mixer2dTriUKAN(nn.Module):
         z = self.drop_in(z)
         z = self.kan_bottleneck(z)
 
+        # PARALLELIZE: Execute Token and Channel mixings simultaneously
         x = self.TokenMixingKAN(z)
-        y = self.ChannelMixingKAN(x)
+        y = self.ChannelMixingKAN(z)
+        
+        # Combine parallel pathways
+        combined = x + y
         
         # STARKAN Redistribution
-        y = self.starkan(y)
+        y = self.starkan(combined)
 
         out = self.proj_out(y)
         out = self.drop_out(out)

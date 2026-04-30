@@ -158,16 +158,48 @@ class KANLinear(nn.Module):
         base_output = F.linear(self.base_activation(x_scaled), self.base_weight)
 
         # ── Spline path ───────────────────────────────────────────────────────
-        spline_output = F.linear(
-            self.b_splines(x_scaled).view(x_scaled.size(0), -1),
-            self.scaled_spline_weight.view(self.out_features, -1),
-        )
+        basis = self.b_splines(x_scaled)             # (B, in_features, G)
+        weight = self.scaled_spline_weight           # (out_features, in_features, G)
+        
+        if getattr(self, 'inference_mode', False):
+            # O(1) lookup instead of full B-spline math
+            # Map x_scaled to indices and gather
+            idx = torch.clamp(
+                ((x_scaled - self.lut_min) / self.lut_step).long(), 
+                0, self.baked_lut.size(0) - 1
+            )
+            # Gather precomputed spline outputs: (B, out_features)
+            # We use broadcasting/gather to accumulate
+            idx_expanded = idx.unsqueeze(-1).expand(-1, -1, self.out_features)
+            spline_output = torch.gather(self.baked_lut, 0, idx_expanded).sum(dim=1)
+        else:
+            # Direct batched multiplication and sum over in_features and grid
+            spline_output = torch.einsum('big,oig->bo', basis, weight)
 
         output = base_output + spline_output
 
         if len(original_shape) == 3:
             output = output.reshape(original_shape[0], original_shape[1], -1)
         return output
+        
+    # ─────────────────────────────────────────────────────────────────────────
+
+    @torch.no_grad()
+    def bake_splines_for_inference(self, resolution: int = 1000):
+        """Pre-computes splines into a lookup table for fast inference."""
+        self.inference_mode = True
+        
+        # Create dense input grid
+        x_eval = torch.linspace(self.grid[0,0].item(), self.grid[0,-1].item(), steps=resolution, device=self.grid.device)
+        x_eval_expanded = x_eval.view(-1, 1).expand(-1, self.in_features)
+        
+        # Pre-compute basis * weights
+        basis = self.b_splines(x_eval_expanded) # (Res, in_features, G)
+        self.baked_lut = torch.einsum('rig,oig->rio', basis, self.scaled_spline_weight)
+        
+        # Calculate scaling factors for O(1) index lookup
+        self.lut_min = self.grid[0,0].item()
+        self.lut_step = (self.grid[0,-1].item() - self.grid[0,0].item()) / (resolution - 1)
 
     # ─────────────────────────────────────────────────────────────────────────
 
