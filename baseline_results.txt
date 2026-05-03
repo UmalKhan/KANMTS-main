@@ -497,3 +497,147 @@ GPU Allocated delta        : 0.57 MB
 GPU Peak Allocated         : 347.82 MB
 GPU Reserved by allocator  : 2692.00 MB
 Trainable parameters       : 28768000
+
+setting: long_term_forecast_weather_96_336_KANMTS_custom_ftM_sl96_ll48_pl336_dm512_dc128_el4_dl2_df512_fc1_dtTrue_Exp_nl2_hd20_bs32_lr0.0001_te8_gs4
+Epoch: 1, Steps: 1140, Train Loss: 0.5842448, Vali Loss: 0.5653562, Test Loss: 0.2697088, Time Cost: 164.7120s
+Epoch: 2, Steps: 1140, Train Loss: 0.5075833, Vali Loss: 0.5524659, Test Loss: 0.2654388, Time Cost: 164.1548s
+Epoch: 3, Steps: 1140, Train Loss: 0.5121086, Vali Loss: 0.5638353, Test Loss: 0.2675313, Time Cost: 167.4565s
+Epoch: 4, Steps: 1140, Train Loss: 0.4649461, Vali Loss: 0.5727400, Test Loss: 0.2768166, Time Cost: 163.9162s
+Epoch: 5, Steps: 1140, Train Loss: 0.3911899, Vali Loss: 0.6043899, Test Loss: 0.2895393, Time Cost: 164.9845s
+Epoch: 6, Steps: 1140, Train Loss: 0.4521848, Vali Loss: 0.5926074, Test Loss: 0.2820466, Time Cost: 170.2142s
+Epoch: 7, Steps: 1140, Train Loss: 0.4933211, Vali Loss: 0.5930412, Test Loss: 0.2872609, Time Cost: 165.7547s
+Epoch: 8, Steps: 1140, Train Loss: 0.3820239, Vali Loss: 0.5935112, Test Loss: 0.2931498, Time Cost: 168.1159s
+
+=== Training Memory & Time ===
+Total Training Time        : 1663.12s
+GPU Allocated (start)      : 101.84 MB
+GPU Allocated (end)        : 450.23 MB
+GPU Allocated delta        : 348.39 MB
+GPU Peak Allocated         : 2303.46 MB
+GPU Reserved by allocator  : 2578.00 MB
+
+=== Test Results ===
+MSE: 0.265439  MAE: 0.294930
+
+=== Test Memory & Time ===
+Total test wall-clock time : 24.86s
+Pure inference time        : 14.13s
+GPU Allocated (start)      : 246.62 MB
+GPU Allocated (end)        : 250.01 MB
+GPU Allocated delta        : 3.40 MB
+GPU Peak Allocated         : 320.37 MB
+GPU Reserved by allocator  : 2578.00 MB
+Trainable parameters       : 26220432
+
+
+setting: long_term_forecast_test_KANMTS_custom_ftMS_sl96_ll48_pl14_dm512_dc128_el2_dl2_df512_fc1_dtTrue_test_nl2_hd20_bs32_lr0.0001_te20_gs4
+Epoch: 1, Steps: 197, Train Loss: 0.0050845, Vali Loss: 0.0161043, Test Loss: 0.0916572, Time Cost: 21.8722s
+Epoch: 2, Steps: 197, Train Loss: 0.0037402, Vali Loss: 0.0161735, Test Loss: 0.0849549, Time Cost: 21.0863s
+Epoch: 3, Steps: 197, Train Loss: 0.0066733, Vali Loss: 0.0160123, Test Loss: 0.0848648, Time Cost: 21.2099s
+Epoch: 4, Steps: 197, Train Loss: 0.0036449, Vali Loss: 0.0172138, Test Loss: 0.0859897, Time Cost: 21.1783s
+Epoch: 5, Steps: 197, Train Loss: 0.0043255, Vali Loss: 0.0169823, Test Loss: 0.0851126, Time Cost: 21.2598s
+Epoch: 6, Steps: 197, Train Loss: 0.0037121, Vali Loss: 0.0168791, Test Loss: 0.0846451, Time Cost: 20.9528s
+
+=== Training Memory & Time ===
+Total Training Time        : 253.53s
+GPU Allocated (start)      : 50.65 MB
+GPU Allocated (end)        : 225.45 MB
+GPU Allocated delta        : 174.80 MB
+GPU Peak Allocated         : 850.74 MB
+GPU Reserved by allocator  : 892.00 MB
+
+=== Test Results ===
+MSE: 0.084865  MAE: 0.207203
+
+=== Test Memory & Time ===
+Total test wall-clock time : 10.96s
+Pure inference time        : 1.40s
+GPU Allocated (start)      : 124.27 MB
+GPU Allocated (end)        : 124.51 MB
+GPU Allocated delta        : 0.24 MB
+GPU Peak Allocated         : 169.19 MB
+GPU Reserved by allocator  : 892.00 MB
+Trainable parameters       : 13039630
+setting: long_term_forecast_test_KANMTS_custom_ftMS_sl96_ll48_pl24_dm512_dc128_el2_dl2_df512_fc1_dtTrue_test_nl2_hd20_bs32_lr0.0001_te20_gs4
+Epoch: 1, Steps: 197, Train Loss: 0.0069016, Vali Loss: 0.0234126, Test Loss: 0.1339457, Time Cost: 21.6854s
+Epoch: 2, Steps: 197, Train Loss: 0.0060334, Vali Loss: 0.0240329, Test Loss: 0.1508906, Time Cost: 21.5281s
+Epoch: 3, Steps: 197, Train Loss: 0.0042497, Vali Loss: 0.0241693, Test Loss: 0.1321358, Time Cost: 21.3346s
+Epoch: 4, Steps: 197, Train Loss: 0.0052852, Vali Loss: 0.0241682, Test Loss: 0.1370710, Time Cost: 21.4202s
+
+=== Training Memory & Time ===
+Total Training Time        : 170.04s
+GPU Allocated (start)      : 50.67 MB
+GPU Allocated (end)        : 222.54 MB
+GPU Allocated delta        : 171.87 MB
+GPU Peak Allocated         : 850.85 MB
+GPU Reserved by allocator  : 892.00 MB
+
+=== Test Results ===
+MSE: 0.133946  MAE: 0.262507
+
+=== Test Memory & Time ===
+Total test wall-clock time : 10.81s
+Pure inference time        : 1.36s
+GPU Allocated (start)      : 121.42 MB
+GPU Allocated (end)        : 121.57 MB
+GPU Allocated delta        : 0.15 MB
+GPU Peak Allocated         : 169.27 MB
+GPU Reserved by allocator  : 892.00 MB
+Trainable parameters       : 13044760
+setting: long_term_forecast_test_KANMTS_custom_ftMS_sl192_ll48_pl48_dm512_dc128_el2_dl2_df512_fc1_dtTrue_test_nl2_hd20_bs32_lr0.0001_te20_gs4
+Epoch: 1, Steps: 193, Train Loss: 0.0160610, Vali Loss: 0.0452342, Test Loss: 0.2561684, Time Cost: 22.0112s
+Epoch: 2, Steps: 193, Train Loss: 0.0166260, Vali Loss: 0.0444233, Test Loss: 0.2273887, Time Cost: 21.7720s
+Epoch: 3, Steps: 193, Train Loss: 0.0088853, Vali Loss: 0.0532869, Test Loss: 0.2697645, Time Cost: 21.9490s
+Epoch: 4, Steps: 193, Train Loss: 0.0065664, Vali Loss: 0.0545111, Test Loss: 0.2737285, Time Cost: 20.9800s
+Epoch: 5, Steps: 193, Train Loss: 0.0085006, Vali Loss: 0.0537273, Test Loss: 0.2726555, Time Cost: 21.1892s
+
+=== Training Memory & Time ===
+Total Training Time        : 215.80s
+GPU Allocated (start)      : 50.91 MB
+GPU Allocated (end)        : 225.51 MB
+GPU Allocated delta        : 174.60 MB
+GPU Peak Allocated         : 852.06 MB
+GPU Reserved by allocator  : 894.00 MB
+
+=== Test Results ===
+MSE: 0.227389  MAE: 0.337351
+
+=== Test Memory & Time ===
+Total test wall-clock time : 10.87s
+Pure inference time        : 1.34s
+GPU Allocated (start)      : 123.69 MB
+GPU Allocated (end)        : 124.11 MB
+GPU Allocated delta        : 0.42 MB
+GPU Peak Allocated         : 169.68 MB
+GPU Reserved by allocator  : 894.00 MB
+Trainable parameters       : 13106224
+setting: long_term_forecast_weather_96_336_KANMTS_custom_ftM_sl96_ll48_pl720_dm512_dc128_el4_dl2_df512_fc1_dtTrue_Exp_nl2_hd20_bs32_lr0.0001_te8_gs4
+Epoch: 1, Steps: 1128, Train Loss: 0.6669864, Vali Loss: 0.6836888, Test Loss: 0.3465106, Time Cost: 166.0532s
+Epoch: 2, Steps: 1128, Train Loss: 0.6249183, Vali Loss: 0.6833818, Test Loss: 0.3455891, Time Cost: 164.7412s
+Epoch: 3, Steps: 1128, Train Loss: 0.6060849, Vali Loss: 0.7065901, Test Loss: 0.3448636, Time Cost: 166.6739s
+Epoch: 4, Steps: 1128, Train Loss: 0.5309087, Vali Loss: 0.7677630, Test Loss: 0.3682213, Time Cost: 168.1239s
+Epoch: 5, Steps: 1128, Train Loss: 0.5390965, Vali Loss: 0.7971547, Test Loss: 0.3709753, Time Cost: 165.7521s
+Epoch: 6, Steps: 1128, Train Loss: 0.4538418, Vali Loss: 0.8350683, Test Loss: 0.3834038, Time Cost: 167.3681s
+Epoch: 7, Steps: 1128, Train Loss: 0.5067670, Vali Loss: 0.8223780, Test Loss: 0.3796559, Time Cost: 166.5672s
+Epoch: 8, Steps: 1128, Train Loss: 0.4578394, Vali Loss: 0.8133272, Test Loss: 0.3772329, Time Cost: 167.0558s
+
+=== Training Memory & Time ===
+Total Training Time        : 1669.10s
+GPU Allocated (start)      : 102.59 MB
+GPU Allocated (end)        : 452.39 MB
+GPU Allocated delta        : 349.79 MB
+GPU Peak Allocated         : 2309.42 MB
+GPU Reserved by allocator  : 2596.00 MB
+
+=== Test Results ===
+MSE: 0.345589  MAE: 0.345323
+
+=== Test Memory & Time ===
+Total test wall-clock time : 25.02s
+Pure inference time        : 13.78s
+GPU Allocated (start)      : 248.50 MB
+GPU Allocated (end)        : 254.18 MB
+GPU Allocated delta        : 5.68 MB
+GPU Peak Allocated         : 326.90 MB
+GPU Reserved by allocator  : 2596.00 MB
+Trainable parameters       : 26417424
